@@ -9,42 +9,42 @@ const LOGO_PRESETS: LogoPreset[] = [
     id: 'h_std',
     name: 'Horizontal',
     group: 'Standard',
-    url: './svg/logo_horizontal.svg',
+    url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-Generator@main/svg/logo_horizontal.svg',
     type: LogoType.HORIZONTAL
   },
   {
     id: 'h_rev',
     name: 'Horizontal (White)',
     group: 'Reverse',
-    url: './svg/logo_horizontal_reverse.svg',
+    url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-Generator@main/svg/logo_horizontal_reverse.svg',
     type: LogoType.HORIZONTAL
   },
   {
     id: 'v_std',
     name: 'Vertical',
     group: 'Standard',
-    url: './svg/logo_vertical.svg',
+    url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-Generator@main/svg/logo_vertical.svg',
     type: LogoType.VERTICAL
   },
   {
     id: 'v_rev',
     name: 'Vertical (White)',
     group: 'Reverse',
-    url: './svg/logo_vertical_reverse.svg',
+    url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-Generator@main/svg/logo_vertical_reverse.svg',
     type: LogoType.VERTICAL
   },
   {
     id: 'i_std',
     name: 'Icon',
     group: 'Standard',
-    url: './svg/logo_icon.svg',
+    url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-Generator@main/svg/logo_icon.svg',
     type: LogoType.ICON
   },
   {
     id: 'i_rev',
     name: 'Icon (White)',
     group: 'Reverse',
-    url: './svg/logo_icon_reverse.svg',
+    url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-Generator@main/svg/logo_icon_reverse.svg',
     type: LogoType.ICON
   },
 ];
