@@ -1,0 +1,5 @@
+{
+  "name": "Pro Logo Scaler",
+  "description": "A professional tool to resize, pad, and format SVG logos based on strict safe-zone rules (Horizontal, Vertical, Icon).",
+  "requestFramePermissions": []
+}
