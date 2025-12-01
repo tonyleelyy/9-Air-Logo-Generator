@@ -76,7 +76,7 @@ const App: React.FC = () => {
               <Layers className="w-5 h-5" />
             </div>
             <h1 className="text-xl font-bold tracking-tight">
-              9Air <span className="text-indigo-600">Logo Generator/span>
+              9Air <span className="text-indigo-600">Logo Generator</span>
             </h1>
           </div>
           <div className="text-sm text-slate-500 font-medium hidden sm:block">
