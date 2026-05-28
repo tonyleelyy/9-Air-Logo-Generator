@@ -1,6 +1,6 @@
 import React from 'react';
-import { LogoConfig, LogoType, OutputFormat, LogoPreset } from '../types';
-import { Settings2, Image as ImageIcon, Maximize, FileType, CheckCircle2 } from 'lucide-react';
+import { BackgroundOption, LogoConfig, LogoType, OutputFormat, LogoPreset } from '../types';
+import { Settings2, Image as ImageIcon, Maximize, FileType, CheckCircle2, Palette } from 'lucide-react';
 
 interface ControlPanelProps {
   config: LogoConfig;
@@ -23,6 +23,49 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     if (!isNaN(num)) {
       setConfig((prev) => ({ ...prev, [field]: num }));
     }
+  };
+
+  const handleDpiChange = (value: string) => {
+    const num = parseInt(value, 10);
+    if (!isNaN(num)) {
+      setConfig((prev) => ({ ...prev, dpi: num }));
+    }
+  };
+
+  const isWhiteLogo = selectedPreset.name.includes('(White)');
+  const isHorizontalOrVerticalWhiteLogo = selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
+  const isTransparentBackground = config.background === BackgroundOption.TRANSPARENT;
+  const backgroundOptions = [
+    { value: BackgroundOption.WHITE, label: 'White', color: '#FFFFFF' },
+    { value: BackgroundOption.BLUE, label: 'Blue', color: '#002FA7' },
+    { value: BackgroundOption.MAGENTA, label: 'Magenta', color: '#F9007B' },
+    { value: BackgroundOption.TRANSPARENT, label: 'Transparent', color: 'transparent' },
+  ];
+
+  const isBackgroundDisabled = (background: BackgroundOption) => {
+    if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) return true;
+    if (isWhiteLogo && background === BackgroundOption.WHITE) return true;
+    if (isHorizontalOrVerticalWhiteLogo && background === BackgroundOption.MAGENTA) return true;
+    return false;
+  };
+
+  const getBackgroundDisabledTitle = (background: BackgroundOption, label: string) => {
+    if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) return 'Standard logos can only use white or transparent backgrounds';
+    if (isWhiteLogo && background === BackgroundOption.WHITE) return 'White logos cannot use a white background';
+    if (isHorizontalOrVerticalWhiteLogo && background === BackgroundOption.MAGENTA) return 'Horizontal and vertical white logos cannot use a magenta background';
+    return label;
+  };
+
+  const handleBackgroundChange = (background: BackgroundOption) => {
+    if (isBackgroundDisabled(background)) return;
+
+    setConfig((prev) => ({
+      ...prev,
+      background,
+      format: background === BackgroundOption.TRANSPARENT && prev.format === OutputFormat.JPG
+        ? OutputFormat.PNG
+        : prev.format,
+    }));
   };
 
   return (
@@ -101,24 +144,52 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             </div>
           </div>
           <div className="mt-4">
-              <label className="block text-xs text-slate-500 mb-1 flex justify-between">
-                <span>DPI (Resolution)</span>
-                <span className="font-mono">{config.dpi}</span>
-              </label>
+              <label className="block text-xs text-slate-500 mb-1">DPI (Resolution)</label>
               <input
-                type="range"
-                min="72"
-                max="300"
-                step="2"
+                type="number"
                 value={config.dpi}
-                onChange={(e) => setConfig((prev) => ({ ...prev, dpi: parseInt(e.target.value, 10) }))}
-                className="w-full accent-indigo-600 cursor-pointer"
+                onChange={(e) => handleDpiChange(e.target.value)}
+                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-mono text-sm"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-                 <span>72 (Web)</span>
-                 <span>150</span>
-                 <span>300 (Print)</span>
-              </div>
+          </div>
+        </div>
+
+        {/* Background */}
+        <div className="space-y-3">
+          <label className="flex items-center space-x-2 text-sm font-semibold text-slate-700">
+            <Palette className="w-4 h-4" />
+            <span>Background Color</span>
+          </label>
+          <div className="grid grid-cols-4 gap-3">
+            {backgroundOptions.map((option) => {
+              const isSelected = config.background === option.value;
+              const isDisabled = isBackgroundDisabled(option.value);
+              const isTransparent = option.value === BackgroundOption.TRANSPARENT;
+
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleBackgroundChange(option.value)}
+                  disabled={isDisabled}
+                  title={getBackgroundDisabledTitle(option.value, option.label)}
+                  aria-label={option.label}
+                  className={`
+                    h-11 rounded-lg border p-1 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+                    ${isSelected ? 'border-indigo-500 ring-1 ring-indigo-500' : 'border-slate-200 hover:border-slate-300'}
+                    ${isDisabled ? 'opacity-40 cursor-not-allowed hover:border-slate-200' : ''}
+                  `}
+                >
+                  <span
+                    className={`
+                      block h-full w-full rounded-md border border-slate-200
+                      ${isTransparent ? 'bg-[linear-gradient(45deg,#e2e8f0_25%,transparent_25%),linear-gradient(-45deg,#e2e8f0_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#e2e8f0_75%),linear-gradient(-45deg,transparent_75%,#e2e8f0_75%)] bg-[length:12px_12px] bg-[position:0_0,0_6px,6px_-6px,-6px_0px] bg-white' : ''}
+                    `}
+                    style={isTransparent ? undefined : { backgroundColor: option.color }}
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -154,32 +225,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           </p>
         </div>
 
-        {/* Format & Transparency */}
+        {/* Format */}
         <div className="space-y-3">
            <label className="flex items-center space-x-2 text-sm font-semibold text-slate-700">
             <FileType className="w-4 h-4" />
             <span>Output Settings</span>
           </label>
           
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-4">
-             {/* Background Toggle */}
-             <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Transparent Background</span>
-                <button
-                  onClick={() => {
-                    const newTransparent = !config.transparent;
-                    // If switching to transparent, force PNG if JPG is selected
-                    const newFormat = newTransparent && config.format === OutputFormat.JPG ? OutputFormat.PNG : config.format;
-                    setConfig((prev) => ({ ...prev, transparent: newTransparent, format: newFormat }));
-                  }}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${config.transparent ? 'bg-indigo-600' : 'bg-slate-300'}`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${config.transparent ? 'translate-x-6' : 'translate-x-1'}`}
-                  />
-                </button>
-             </div>
-
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
              {/* Format Selection */}
              <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600">Format</span>
@@ -192,15 +245,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   </button>
                   <button
                     onClick={() => setConfig((prev) => ({ ...prev, format: OutputFormat.JPG }))}
-                    disabled={config.transparent}
+                    disabled={isTransparentBackground}
                     className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-                      config.transparent 
+                      isTransparentBackground 
                         ? 'opacity-50 cursor-not-allowed text-slate-300' 
                         : config.format === OutputFormat.JPG 
                           ? 'bg-indigo-100 text-indigo-700' 
                           : 'text-slate-500 hover:text-slate-700'
                     }`}
-                    title={config.transparent ? "JPG does not support transparency" : ""}
+                    title={isTransparentBackground ? "JPG does not support transparency" : ""}
                   >
                     JPG
                   </button>

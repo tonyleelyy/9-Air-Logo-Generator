@@ -10,12 +10,19 @@ export enum OutputFormat {
   GIF = 'gif',
 }
 
+export enum BackgroundOption {
+  WHITE = 'white',
+  BLUE = 'blue',
+  MAGENTA = 'magenta',
+  TRANSPARENT = 'transparent',
+}
+
 export interface LogoConfig {
   width: number;
   height: number;
   type: LogoType;
   format: OutputFormat;
-  transparent: boolean;
+  background: BackgroundOption;
   dpi: number;
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LogoConfig } from '../types';
+import { BackgroundOption, LogoConfig } from '../types';
 import { renderLogoToCanvas } from '../utils/logoLogic';
 import { Download, AlertCircle, Loader2, Image as ImageIcon } from 'lucide-react';
 import { changeDpiOnDataUrl } from '../utils/dpiLogic';
@@ -16,6 +16,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ svgUrl, config }) => {
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [renderedDims, setRenderedDims] = useState<{w: number, h: number} | null>(null);
+  const isTransparentBackground = config.background === BackgroundOption.TRANSPARENT;
 
   // Debounced Render Effect
   useEffect(() => {
@@ -40,12 +41,12 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ svgUrl, config }) => {
           const { data, width, height } = imageData;
 
           // For transparency, we config 'format' to rgba4444 or use clearAlpha
-          const quantizeFormat = config.transparent ? "rgba4444" : "rgb565";
+          const quantizeFormat = isTransparentBackground ? "rgba4444" : "rgb565";
           const palette = quantize(data, 256, { format: quantizeFormat });
           const index = applyPalette(data, palette, quantizeFormat);
           
           const gif = GIFEncoder();
-          gif.writeFrame(index, width, height, { palette, transparent: config.transparent, transparentIndex: config.transparent ? 0 : undefined });
+          gif.writeFrame(index, width, height, { palette, transparent: isTransparentBackground, transparentIndex: isTransparentBackground ? 0 : undefined });
           gif.finish();
           const buffer = gif.bytes();
           
@@ -80,7 +81,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ svgUrl, config }) => {
     const timer = setTimeout(render, 300);
     return () => clearTimeout(timer);
 
-  }, [svgUrl, config.width, config.height, config.type, config.format, config.transparent, config.dpi]);
+  }, [svgUrl, config.width, config.height, config.type, config.format, config.background, config.dpi, isTransparentBackground]);
 
 
   const handleDownload = () => {
@@ -90,7 +91,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ svgUrl, config }) => {
     link.href = previewUrl;
     
     // Construct filename: generated_{type}_{w}x{h}_{bg}.{ext}
-    const bgLabel = config.transparent ? 'transparent' : 'white';
+    const bgLabel = config.background;
     const filename = `generated_${config.type}_${config.width}x${config.height}_${bgLabel}.${config.format}`;
     
     link.download = filename;

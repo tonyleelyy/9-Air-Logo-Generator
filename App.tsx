@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ReactNode } from 'react';
-import { LogoConfig, LogoType, OutputFormat, LogoPreset } from './types';
+import { BackgroundOption, LogoConfig, LogoType, OutputFormat, LogoPreset } from './types';
 import ControlPanel from './components/ControlPanel';
 import PreviewPanel from './components/PreviewPanel';
 import { Layers, AlertTriangle } from 'lucide-react';
@@ -107,7 +107,7 @@ const DEFAULT_CONFIG: LogoConfig = {
   height: 500,
   type: LogoType.HORIZONTAL,
   format: OutputFormat.PNG,
-  transparent: false,
+  background: BackgroundOption.WHITE,
   dpi: 72,
 };
 
@@ -117,7 +117,24 @@ const AppContent: React.FC = () => {
 
   // Automatically update the safe zone logic (type) when the preset changes
   useEffect(() => {
-    setConfig(prev => ({ ...prev, type: selectedPreset.type }));
+    const isWhiteLogo = selectedPreset.name.includes('(White)');
+    const disallowsMagenta = selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
+    setConfig(prev => {
+      let background = prev.background;
+
+      if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) {
+        background = BackgroundOption.WHITE;
+      } else if (isWhiteLogo && (background === BackgroundOption.WHITE || (disallowsMagenta && background === BackgroundOption.MAGENTA))) {
+        background = BackgroundOption.TRANSPARENT;
+      }
+
+      return {
+        ...prev,
+        type: selectedPreset.type,
+        background,
+        format: background === BackgroundOption.TRANSPARENT && prev.format === OutputFormat.JPG ? OutputFormat.PNG : prev.format,
+      };
+    });
   }, [selectedPreset]);
 
   return (

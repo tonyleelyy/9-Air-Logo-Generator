@@ -1,4 +1,4 @@
-import { LogoType } from '../types';
+import { BackgroundOption, LogoType } from '../types';
 
 /**
  * Calculates the target dimensions for the logo based on the Python script's logic.
@@ -60,7 +60,7 @@ export const calculateTargetDimensions = (
  */
 export const renderLogoToCanvas = async (
   svgUrl: string,
-  config: { width: number; height: number; type: LogoType; transparent: boolean; format: string; dpi?: number }
+  config: { width: number; height: number; type: LogoType; background: BackgroundOption; format: string; dpi?: number }
 ): Promise<HTMLCanvasElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -79,8 +79,14 @@ export const renderLogoToCanvas = async (
       }
 
       // 1. Fill Background
-      if (!config.transparent) {
-        ctx.fillStyle = '#FFFFFF';
+      const backgroundColors: Record<Exclude<BackgroundOption, BackgroundOption.TRANSPARENT>, string> = {
+        [BackgroundOption.WHITE]: '#FFFFFF',
+        [BackgroundOption.BLUE]: '#002FA7',
+        [BackgroundOption.MAGENTA]: '#F9007B',
+      };
+
+      if (config.background !== BackgroundOption.TRANSPARENT) {
+        ctx.fillStyle = backgroundColors[config.background];
         ctx.fillRect(0, 0, config.width, config.height);
       } else {
         ctx.clearRect(0, 0, config.width, config.height);
