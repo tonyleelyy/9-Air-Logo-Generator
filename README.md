@@ -1,20 +1,32 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+  <img alt="9 Air logo generator banner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" style="max-width: 100%; height: auto;" />
 </div>
 
-# Run and deploy your AI Studio app
+# 9 Air Logo Generator
 
-This contains everything you need to run your app locally.
+A small web tool for resizing and exporting 9 Air logo assets with consistent safe-zone spacing. It supports horizontal, vertical, and icon logo presets, plus PNG, JPG, and GIF exports.
 
-View your app in AI Studio: https://ai.studio/apps/cb4b0fce-45fb-47dd-a84e-d4d6257ee605
+## Features
+
+- Select standard or reverse 9 Air logo variants.
+- Set custom output width, height, and DPI.
+- Export with white or transparent backgrounds.
+- Download PNG, JPG, or GIF output.
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open the local URL shown in the terminal.
