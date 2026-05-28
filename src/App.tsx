@@ -133,16 +133,28 @@ const AppContent: React.FC = () => {
 
   // Automatically update the safe zone logic (type) when the preset changes
   useEffect(() => {
-    const isWhiteLogo = selectedPreset.group === 'White' || selectedPreset.id === 'i_rev' || selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
-    const disallowsMagenta = selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
-    setConfig(prev => {
-      let background = prev.background;
-
-      if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) {
-        background = BackgroundOption.WHITE;
-      } else if (isWhiteLogo && (background === BackgroundOption.WHITE || background === BackgroundOption.BLUE || (disallowsMagenta && background === BackgroundOption.MAGENTA))) {
-        background = BackgroundOption.TRANSPARENT;
+    const allowedBackgrounds = (() => {
+      if (selectedPreset.type === LogoType.ICON) {
+        return selectedPreset.group === 'Standard'
+          ? [BackgroundOption.WHITE, BackgroundOption.BLUE, BackgroundOption.TRANSPARENT]
+          : [BackgroundOption.BLUE, BackgroundOption.MAGENTA, BackgroundOption.TRANSPARENT];
       }
+
+      if (selectedPreset.group === 'Standard') {
+        return [BackgroundOption.WHITE, BackgroundOption.TRANSPARENT];
+      }
+
+      if (selectedPreset.group === 'Reverse') {
+        return [BackgroundOption.BLUE, BackgroundOption.TRANSPARENT];
+      }
+
+      return [BackgroundOption.MAGENTA, BackgroundOption.TRANSPARENT];
+    })();
+
+    setConfig(prev => {
+      const background = allowedBackgrounds.includes(prev.background)
+        ? prev.background
+        : allowedBackgrounds[0];
 
       return {
         ...prev,

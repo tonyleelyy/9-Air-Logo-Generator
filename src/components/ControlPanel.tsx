@@ -32,8 +32,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     }
   };
 
-  const isWhiteLogo = selectedPreset.group === 'White' || selectedPreset.id === 'i_rev' || selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
-  const isHorizontalOrVerticalWhiteLogo = selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
   const isTransparentBackground = config.background === BackgroundOption.TRANSPARENT;
   const backgroundOptions = [
     { value: BackgroundOption.WHITE, label: 'White', color: '#FFFFFF' },
@@ -42,19 +40,37 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     { value: BackgroundOption.TRANSPARENT, label: 'Transparent', color: 'transparent' },
   ];
 
+  const allowedBackgrounds = (() => {
+    if (selectedPreset.type === LogoType.ICON) {
+      return selectedPreset.group === 'Standard'
+        ? [BackgroundOption.WHITE, BackgroundOption.BLUE, BackgroundOption.TRANSPARENT]
+        : [BackgroundOption.BLUE, BackgroundOption.MAGENTA, BackgroundOption.TRANSPARENT];
+    }
+
+    if (selectedPreset.group === 'Standard') {
+      return [BackgroundOption.WHITE, BackgroundOption.TRANSPARENT];
+    }
+
+    if (selectedPreset.group === 'Reverse') {
+      return [BackgroundOption.BLUE, BackgroundOption.TRANSPARENT];
+    }
+
+    return [BackgroundOption.MAGENTA, BackgroundOption.TRANSPARENT];
+  })();
+
   const isBackgroundDisabled = (background: BackgroundOption) => {
-    if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) return true;
-    if (isWhiteLogo && background === BackgroundOption.WHITE) return true;
-    if (isWhiteLogo && background === BackgroundOption.BLUE) return true;
-    if (isHorizontalOrVerticalWhiteLogo && background === BackgroundOption.MAGENTA) return true;
-    return false;
+    return !allowedBackgrounds.includes(background);
   };
 
   const getBackgroundDisabledTitle = (background: BackgroundOption, label: string) => {
-    if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) return 'Standard logos can only use white or transparent backgrounds';
-    if (isWhiteLogo && background === BackgroundOption.WHITE) return 'White logos cannot use a white background';
-    if (isWhiteLogo && background === BackgroundOption.BLUE) return 'White logos cannot use a blue background';
-    if (isHorizontalOrVerticalWhiteLogo && background === BackgroundOption.MAGENTA) return 'Horizontal and vertical white logos cannot use a magenta background';
+    if (isBackgroundDisabled(background)) {
+      const allowedLabels = backgroundOptions
+        .filter((option) => allowedBackgrounds.includes(option.value))
+        .map((option) => option.label.toLowerCase())
+        .join(' or ');
+      return `${selectedPreset.group} ${selectedPreset.type} logos can only use ${allowedLabels} backgrounds`;
+    }
+
     return label;
   };
 
