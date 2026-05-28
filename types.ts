@@ -29,7 +29,8 @@ export interface LogoConfig {
 export interface LogoPreset {
   id: string;
   name: string;
-  group: 'Standard' | 'Reverse';
+  group: 'Standard' | 'Reverse' | 'White';
   url: string;
   type: LogoType;
+  forceWhite?: boolean;
 }

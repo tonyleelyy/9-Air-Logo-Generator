@@ -67,10 +67,18 @@ const LOGO_PRESETS: LogoPreset[] = [
   },
   {
     id: 'h_rev',
-    name: 'Horizontal (White)',
+    name: 'Horizontal Reverse',
     group: 'Reverse',
     url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-svg@main/logo_horizontal_reverse.svg',
     type: LogoType.HORIZONTAL
+  },
+  {
+    id: 'h_white',
+    name: 'Horizontal White',
+    group: 'White',
+    url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-svg@main/logo_horizontal_reverse.svg',
+    type: LogoType.HORIZONTAL,
+    forceWhite: true
   },
   {
     id: 'v_std',
@@ -81,10 +89,18 @@ const LOGO_PRESETS: LogoPreset[] = [
   },
   {
     id: 'v_rev',
-    name: 'Vertical (White)',
+    name: 'Vertical Reverse',
     group: 'Reverse',
     url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-svg@main/logo_vertical_reverse.svg',
     type: LogoType.VERTICAL
+  },
+  {
+    id: 'v_white',
+    name: 'Vertical White',
+    group: 'White',
+    url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-svg@main/logo_vertical_reverse.svg',
+    type: LogoType.VERTICAL,
+    forceWhite: true
   },
   {
     id: 'i_std',
@@ -95,7 +111,7 @@ const LOGO_PRESETS: LogoPreset[] = [
   },
   {
     id: 'i_rev',
-    name: 'Icon (White)',
+    name: 'Icon Reverse',
     group: 'Reverse',
     url: 'https://fastly.jsdelivr.net/gh/tonyleelyy/9-Air-Logo-svg@main/logo_icon_reverse.svg',
     type: LogoType.ICON
@@ -117,14 +133,14 @@ const AppContent: React.FC = () => {
 
   // Automatically update the safe zone logic (type) when the preset changes
   useEffect(() => {
-    const isWhiteLogo = selectedPreset.name.includes('(White)');
+    const isWhiteLogo = selectedPreset.group === 'White' || selectedPreset.id === 'i_rev' || selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
     const disallowsMagenta = selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
     setConfig(prev => {
       let background = prev.background;
 
       if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) {
         background = BackgroundOption.WHITE;
-      } else if (isWhiteLogo && (background === BackgroundOption.WHITE || (disallowsMagenta && background === BackgroundOption.MAGENTA))) {
+      } else if (isWhiteLogo && (background === BackgroundOption.WHITE || background === BackgroundOption.BLUE || (disallowsMagenta && background === BackgroundOption.MAGENTA))) {
         background = BackgroundOption.TRANSPARENT;
       }
 
@@ -147,7 +163,7 @@ const AppContent: React.FC = () => {
               <Layers className="w-5 h-5" />
             </div>
             <h1 className="text-xl font-bold tracking-tight">
-              Pro <span className="text-indigo-600">Logo Scaler</span>
+              9Air <span className="text-indigo-600">Logo Generator</span>
             </h1>
           </div>
           <div className="text-sm text-slate-500 font-medium hidden sm:block">
@@ -175,6 +191,7 @@ const AppContent: React.FC = () => {
           <div className="lg:col-span-8 h-full">
             <PreviewPanel 
               svgUrl={selectedPreset.url}
+              forceWhiteLogo={selectedPreset.forceWhite}
               config={config} 
             />
           </div>

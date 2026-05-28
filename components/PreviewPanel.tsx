@@ -7,10 +7,11 @@ import { GIFEncoder, quantize, applyPalette } from 'gifenc';
 
 interface PreviewPanelProps {
   svgUrl: string;
+  forceWhiteLogo?: boolean;
   config: LogoConfig;
 }
 
-const PreviewPanel: React.FC<PreviewPanelProps> = ({ svgUrl, config }) => {
+const PreviewPanel: React.FC<PreviewPanelProps> = ({ svgUrl, forceWhiteLogo = false, config }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +31,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ svgUrl, config }) => {
       setLoading(true);
       setError(null);
       try {
-        const canvas = await renderLogoToCanvas(svgUrl, config);
+        const canvas = await renderLogoToCanvas(svgUrl, config, forceWhiteLogo);
         let finalDataUrl = '';
 
         if (config.format === 'gif') {
@@ -81,7 +82,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({ svgUrl, config }) => {
     const timer = setTimeout(render, 300);
     return () => clearTimeout(timer);
 
-  }, [svgUrl, config.width, config.height, config.type, config.format, config.background, config.dpi, isTransparentBackground]);
+  }, [svgUrl, forceWhiteLogo, config.width, config.height, config.type, config.format, config.background, config.dpi, isTransparentBackground]);
 
 
   const handleDownload = () => {

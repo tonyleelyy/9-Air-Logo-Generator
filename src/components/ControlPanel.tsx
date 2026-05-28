@@ -32,7 +32,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     }
   };
 
-  const isWhiteLogo = selectedPreset.name.includes('(White)');
+  const isWhiteLogo = selectedPreset.group === 'White' || selectedPreset.id === 'i_rev' || selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
   const isHorizontalOrVerticalWhiteLogo = selectedPreset.id === 'h_rev' || selectedPreset.id === 'v_rev';
   const isTransparentBackground = config.background === BackgroundOption.TRANSPARENT;
   const backgroundOptions = [
@@ -45,6 +45,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const isBackgroundDisabled = (background: BackgroundOption) => {
     if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) return true;
     if (isWhiteLogo && background === BackgroundOption.WHITE) return true;
+    if (isWhiteLogo && background === BackgroundOption.BLUE) return true;
     if (isHorizontalOrVerticalWhiteLogo && background === BackgroundOption.MAGENTA) return true;
     return false;
   };
@@ -52,6 +53,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const getBackgroundDisabledTitle = (background: BackgroundOption, label: string) => {
     if (!isWhiteLogo && (background === BackgroundOption.BLUE || background === BackgroundOption.MAGENTA)) return 'Standard logos can only use white or transparent backgrounds';
     if (isWhiteLogo && background === BackgroundOption.WHITE) return 'White logos cannot use a white background';
+    if (isWhiteLogo && background === BackgroundOption.BLUE) return 'White logos cannot use a blue background';
     if (isHorizontalOrVerticalWhiteLogo && background === BackgroundOption.MAGENTA) return 'Horizontal and vertical white logos cannot use a magenta background';
     return label;
   };
@@ -80,7 +82,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         {/* Logo Selection */}
         <div className="space-y-3">
           <label className="block text-sm font-semibold text-slate-700">Select Logo</label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {presets.map((preset) => {
               const isSelected = selectedPreset.id === preset.id;
               return (
@@ -95,8 +97,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                     }
                   `}
                 >
-                  <div className="text-sm font-medium text-slate-900 mb-0.5">{preset.name}</div>
-                  <div className="text-xs text-slate-500 flex items-center justify-between">
+                  <div className="text-sm font-medium text-slate-900 flex items-center justify-between">
                      <span>{preset.group}</span>
                      {isSelected && <CheckCircle2 className="w-4 h-4 text-indigo-600" />}
                   </div>

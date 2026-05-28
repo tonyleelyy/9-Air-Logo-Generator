@@ -60,7 +60,8 @@ export const calculateTargetDimensions = (
  */
 export const renderLogoToCanvas = async (
   svgUrl: string,
-  config: { width: number; height: number; type: LogoType; background: BackgroundOption; format: string; dpi?: number }
+  config: { width: number; height: number; type: LogoType; background: BackgroundOption; format: string; dpi?: number },
+  forceWhiteLogo = false
 ): Promise<HTMLCanvasElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -126,6 +127,23 @@ export const renderLogoToCanvas = async (
       reject(new Error("Failed to load SVG image from URL."));
     };
 
-    img.src = svgUrl;
+    if (forceWhiteLogo) {
+      fetch(svgUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to load SVG image from URL.");
+          }
+          return response.text();
+        })
+        .then((svgText) => {
+          const whiteSvg = svgText
+            .replace(/fill:\s*#[0-9a-fA-F]{3,8}/g, 'fill:#fff')
+            .replace(/fill="(?!none)[^"]+"/g, 'fill="#fff"');
+          img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(whiteSvg)}`;
+        })
+        .catch(() => reject(new Error("Failed to load SVG image from URL.")));
+    } else {
+      img.src = svgUrl;
+    }
   });
 };
