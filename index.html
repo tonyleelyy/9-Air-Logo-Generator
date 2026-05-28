@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>9Air Logo Generator</title>
+    <title>Pro Logo Scaler</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       /* Custom scrollbar for better aesthetics */
@@ -21,12 +21,29 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8; 
       }
+      /* Loading spinner styles */
+      #loading-spinner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        color: #475569;
+        font-family: sans-serif;
+      }
     </style>
-
-</head>
+  </head>
   <body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-100 selection:text-indigo-700">
-    <div id="root"></div>
-    <!-- Point to /src/index.tsx to match your actual filename -->
-    <script type="module" src="src/index.tsx"></script>
+    <div id="root">
+      <div id="loading-spinner">
+        <svg class="animate-spin h-10 w-10 text-indigo-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-lg font-medium">Loading Application...</p>
+        <p class="text-sm text-slate-400 mt-2">If this persists, check console (F12) for errors.</p>
+      </div>
+    </div>
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>
